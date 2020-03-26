@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 
 public class SQLRuParser implements Parse {
 
@@ -27,7 +26,7 @@ public class SQLRuParser implements Parse {
     /**
      * Log log4J
      */
-    static final Logger LOG = LogManager.getLogger(MainProgram.class.getName());
+    static final Logger LOG = LogManager.getLogger(ParserSQLru.class.getName());
 
     /**
      * Method parses given HTML page for Java vacancies and excludes JavaScript then adds it to list.
@@ -42,19 +41,20 @@ public class SQLRuParser implements Parse {
             String vacancyName = el.select("a[href]").text();
             String vacancyLink = el.select("a[href]").attr("href");
             String vacancyDate = el.select("td.altCol").last().text();
-            String vacancyText = getVacancyText(vacancyLink);
             int vacancyYear = getYear(vacancyDate);
             if (vacancyName.contains("Java")
                     || vacancyName.contains("java")
-                    || vacancyName.contains("JAVA")
-                    && (!vacancyName.contains("Script"))
-                    && (!vacancyName.contains("script"))
-                    && (!vacancyName.contains("SCRIPT"))
-                    && vacancyYear >= getYear(vacancyDate)) {
-                list.add(0, vacancyName);
-                list.add(1, vacancyText);
-                list.add(2, vacancyDate);
-                list.add(3, vacancyLink);
+                    || vacancyName.contains("JAVA")) {
+                if ((!vacancyName.contains("Script")
+                    || (!vacancyName.contains("script"))
+                    || (!vacancyName.contains("SCRIPT")))
+                    && (vacancyYear >= getYear(vacancyDate))) {
+                    String vacancyText = getVacancyText(vacancyLink);
+                    list.add(0, vacancyName);
+                    list.add(1, vacancyText);
+                    list.add(2, vacancyDate);
+                    list.add(3, vacancyLink);
+                }
             }
         }
         LOG.info("Vacancy has been added to list");
@@ -86,8 +86,6 @@ public class SQLRuParser implements Parse {
         return result;
     }
 
-
-
     /**
      * Method trim incoming data time to two last digits of the year. If date time contains words 'сегодня' or 'вчера',
      * method returns current year.
@@ -95,7 +93,7 @@ public class SQLRuParser implements Parse {
      * @param date date time
      * @return trimmed date time
      */
-    protected int getYear(String date) {
+    private int getYear(String date) {
         int result = 0;
         String temp = date.substring(0, date.length() - 7);
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy");

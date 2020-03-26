@@ -12,7 +12,7 @@ public class SQLRuParserConfig {
     /**
      * Log log4J
      */
-    static final Logger LOG = LogManager.getLogger(MainProgram.class.getName());
+    static final Logger LOG = LogManager.getLogger(ParserSQLru.class.getName());
 
     /**
      * Contains user agents.
